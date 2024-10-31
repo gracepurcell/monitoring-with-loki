@@ -10,7 +10,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - node_app_logs:/var/log/node_app
+      - node_app_logs:/var/log/node-app
     networks:
       - node_monitoring
     
@@ -43,7 +43,7 @@ services:
     container_name: promtail_container
     volumes:
       - ./promtail/promtail-config.yml:/etc/promtail/config.yml
-      - node_app_logs:/var/log/node_app
+      - node_app_logs:/var/log/node-app
     ports:
       - 9080:9080
     networks:
