@@ -1,0 +1,20 @@
+# promtail-config.yaml
+
+server:
+  http_listen_port: 9080  # Port for Promtail's HTTP server
+  grpc_listen_port: 0     # Disable gRPC server
+
+positions:
+  filename: /tmp/positions.yaml  # File to track last read positions in log files
+
+clients:
+  - url: http://loki_container:3100/loki/api/v1/push  # Loki server URL
+
+scrape_configs:
+  - job_name: node-express-logs
+    static_configs:
+      - targets:
+          - app_container
+        labels:
+          job: node-express
+          __path__: /var/log/node-app/app.log  # Path to log files

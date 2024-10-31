@@ -9,12 +9,13 @@ services:
     container_name: app_container
     ports:
       - 3000:3000
+    volumes:
+      - node_app_logs:/var/log/node_app
     networks:
       - node_monitoring
     
-
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     container_name: prometheus_container
     ports:
       - 9090:9090
@@ -24,9 +25,45 @@ services:
     networks:
       - node_monitoring
 
+  loki:
+    image: grafana/loki:2.7.1
+    container_name: loki_container
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - node_monitoring
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+
+  promtail:
+    image: grafana/promtail:2.7.1
+    container_name: promtail_container
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml
+      - node_app_logs:/var/log/node_app
+    ports:
+      - 9080:9080
+    networks:
+      - node_monitoring
+    command: 
+      - "-config.file=/etc/promtail/config.yml"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_container
+    ports:
+      - 3001:3000
+    networks:
+      - node_monitoring
+
   
 volumes:
   prometheus_storage:
+  node_app_logs:
+  loki_data:
 
 networks:
   node_monitoring:
